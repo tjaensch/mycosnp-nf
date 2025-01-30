@@ -1,5 +1,5 @@
 {
-    "name": "ph-core/mycosnp",
+    "name": "mycosnp",
     "homePage": "https://github.com/cdcent/oamd-bio-fungal-mycosnp",
     "repos": {
         "https://github.com/nf-core/modules.git": {

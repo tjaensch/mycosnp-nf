@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/ph-core/mycosnp/master/nextflow_schema.json",
-    "title": "ph-core/mycosnp pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/cdcent/oamd-bio-fungal-mycosnp/master/nextflow_schema.json",
+    "title": "mycosnp pipeline parameters",
     "description": "MycoSNP is a portable workflow for performing whole genome sequencing analysis of fungal organisms, including Candida auris. This method prepares the reference, performs quality control, and calls variants using a reference. MycoSNP generates several output files that are compatible with downstream analytic tools, such as those for used for phylogenetic tree-building and gene variant annotations.",
     "type": "object",
     "$defs": {

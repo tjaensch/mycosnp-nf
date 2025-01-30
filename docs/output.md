@@ -1,4 +1,4 @@
-# ph-core/mycosnp: Output
+# mycosnp: Output
 
 ## Introduction
 

@@ -1,7 +1,7 @@
 <!--
-# ph-core/mycosnp pull request
+# mycosnp pull request
 
-Many thanks for contributing to ph-core/mycosnp!
+Many thanks for contributing to mycosnp!
 
 Please fill in the appropriate checklist below (delete whatever is not relevant).
 These are the most common things requested on pull requests (PRs).

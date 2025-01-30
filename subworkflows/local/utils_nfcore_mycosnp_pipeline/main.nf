@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the ph-core/mycosnp pipeline
+// Subworkflow with functionality specific to the mycosnp pipeline
 //
 
 /*

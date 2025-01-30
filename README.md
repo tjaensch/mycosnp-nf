@@ -1,4 +1,4 @@
-# ph-core/mycosnp
+# Mycosnp
 
 [![GitHub Actions CI Status](https://github.com/cdcent/oamd-bio-fungal-mycosnp/actions/workflows/ci.yml/badge.svg)](https://github.com/cdcent/oamd-bio-fungal-mycosnp/actions/workflows/ci.yml)
 [![GitHub Actions Linting Status](https://github.com/cdcent/oamd-bio-fungal-mycosnp/actions/workflows/linting.yml/badge.svg)](https://github.com/cdcent/oamd-bio-fungal-mycosnp/actions/workflows/linting.yml)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
@@ -12,7 +12,7 @@
 
 ## Introduction
 
-**ph-core/mycosnp** is a bioinformatics pipeline that ...
+**Mycosnp** is a bioinformatics pipeline that ...
 
 <!-- TODO nf-core:
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
@@ -50,7 +50,7 @@ Now, you can run the pipeline using:
 <!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
 
 ```bash
-nextflow run ph-core/mycosnp \
+nextflow run mycosnp \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
    --outdir <OUTDIR>
@@ -61,7 +61,7 @@ nextflow run ph-core/mycosnp \
 
 ## Credits
 
-ph-core/mycosnp was originally written by CDC.
+mycosnp was originally written by CDC.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
@@ -74,7 +74,7 @@ If you would like to contribute to this pipeline, please see the [contributing g
 ## Citations
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use ph-core/mycosnp for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+<!-- If you use mycosnp for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
 
 <!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
