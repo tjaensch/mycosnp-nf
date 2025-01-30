@@ -55,7 +55,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run ph-core/mycosnp --input ./samplesheet.csv --outdir ./results  -profile docker
+nextflow run mycosnp --input ./samplesheet.csv --outdir ./results  -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -79,7 +79,7 @@ Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <
 The above pipeline run specified with a params file in yaml format:
 
 ```bash
-nextflow run ph-core/mycosnp -profile docker -params-file params.yaml
+nextflow run mycosnp -profile docker -params-file params.yaml
 ```
 
 with:
@@ -104,7 +104,7 @@ nextflow pull ph-core/mycosnp
 
 It is a good idea to specify the pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
-First, go to the [ph-core/mycosnp releases page](https://github.com/ph-core/mycosnp/releases) and find the latest pipeline version - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`. Of course, you can switch to another version by changing the number after the `-r` flag.
+First, go to the [mycosnp releases page](https://github.com/cdcent/oamd-bio-fungal-mycosnp/releases) and find the latest pipeline version - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`. Of course, you can switch to another version by changing the number after the `-r` flag.
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future. For example, at the bottom of the MultiQC reports.
 

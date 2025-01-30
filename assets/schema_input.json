@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/ph-core/mycosnp/master/assets/schema_input.json",
-    "title": "ph-core/mycosnp pipeline - params.input schema",
+    "$id": "https://raw.githubusercontent.com/cdcent/oamd-bio-fungal-mycosnp/master/assets/schema_input.json",
+    "title": "mycosnp pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

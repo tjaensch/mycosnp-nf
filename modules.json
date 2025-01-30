@@ -1,6 +1,6 @@
 {
     "name": "ph-core/mycosnp",
-    "homePage": "https://github.com/ph-core/mycosnp",
+    "homePage": "https://github.com/cdcent/oamd-bio-fungal-mycosnp",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {
