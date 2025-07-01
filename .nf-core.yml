@@ -1,0 +1,5 @@
+---
+name: mycosnp
+repository: https://github.com/CDCgov/mycosnp-nf
+description: "Whole Genome Sequencing Analysis of Fungal Isolates"
+author: "CDC"
