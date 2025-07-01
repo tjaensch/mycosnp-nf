@@ -1,6 +1,6 @@
 repository_type: pipeline
 
-nf_core_version: 3.1.2
+nf_core_version: 3.3.1
 
 lint:
   files_unchanged:
@@ -50,11 +50,7 @@ lint:
 template:
   org: ph-core
   name: mycosnp
-  description: MycoSNP is a portable workflow for performing whole genome sequencing
-    analysis of fungal organisms, including Candida auris. This method prepares the
-    reference, performs quality control, and calls variants using a reference. MycoSNP
-    generates several output files that are compatible with downstream analytic tools,
-    such as those for used for phylogenetic tree-building and gene variant annotations.
+  description: MycoSNP is a portable workflow for performing whole genome sequencing analysis of fungal organisms, including Candida auris.
   author: CDC
   version: 1.0.0dev
   force: true
