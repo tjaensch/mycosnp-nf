@@ -1,4 +1,14 @@
 image: nfcore/gitpod:latest
+tasks:
+  - name: Update Nextflow and setup pre-commit
+    command: |
+      pre-commit install --install-hooks
+      nextflow self-update
+
+vscode:
+  extensions:
+    - nf-core.nf-core-extensionpack # https://github.com/nf-core/vscode-extensionpack
+image: nfcore/gitpod:latest
 
 tasks:
   - name: Install graphviz

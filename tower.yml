@@ -1,4 +1,9 @@
 reports:
+  multiqc_report.html:
+    display: "MultiQC HTML report"
+  samplesheet.csv:
+    display: "Auto-created samplesheet with collated metadata and FASTQ paths"
+reports:
   "**/stats/qc_report/qc_report.txt":
     display: "QC Report (Per Sample)"
   "**/stats/samtools_flagstat/*.flagstat":

@@ -1,4 +1,7 @@
 {
+    "markdown.styles": ["public/vscode_markdown.css"]
+}
+{
     "cSpell.words": [
         "ATSDR",
         "CFPB",

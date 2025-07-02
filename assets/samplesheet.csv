@@ -1,4 +1,10 @@
+<<<<<<< HEAD
+sample,fastq_1,fastq_2
+SAMPLE_PAIRED_END,/path/to/fastq/files/AEG588A1_S1_L002_R1_001.fastq.gz,/path/to/fastq/files/AEG588A1_S1_L002_R2_001.fastq.gz
+SAMPLE_SINGLE_END,/path/to/fastq/files/AEG588A4_S4_L003_R1_001.fastq.gz,
+=======
 sample_id,fastq_1,fastq_2
 SRR2584863,path/to/SRR2584863_1.fastq.gz,path/to/SRR2584863_2.fastq.gz
 SRR2584866,path/to/SRR2584866_1.fastq.gz,path/to/SRR2584866_2.fastq.gz
 SRR2589044,path/to/SRR2589044_1.fastq.gz,path/to/SRR2589044_2.fastq.gz
+>>>>>>> mycosnp-nf-source/master

@@ -1,4 +1,101 @@
 /*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+include { FASTQC                 } from '../modules/nf-core/fastqc/main'
+include { MULTIQC                } from '../modules/nf-core/multiqc/main'
+include { paramsSummaryMap       } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_mycosnp_pipeline'
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    RUN MAIN WORKFLOW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+workflow MYCOSNP {
+
+    take:
+    ch_samplesheet // channel: samplesheet read in from --input
+    main:
+
+    ch_versions = Channel.empty()
+    ch_multiqc_files = Channel.empty()
+    //
+    // MODULE: Run FastQC
+    //
+    FASTQC (
+        ch_samplesheet
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
+    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+
+    //
+    // Collate and save software versions
+    //
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name:  'mycosnp_software_'  + 'mqc_'  + 'versions.yml',
+            sort: true,
+            newLine: true
+        ).set { ch_collated_versions }
+
+
+    //
+    // MODULE: MultiQC
+    //
+    ch_multiqc_config        = Channel.fromPath(
+        "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    ch_multiqc_custom_config = params.multiqc_config ?
+        Channel.fromPath(params.multiqc_config, checkIfExists: true) :
+        Channel.empty()
+    ch_multiqc_logo          = params.multiqc_logo ?
+        Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
+        Channel.empty()
+
+    summary_params      = paramsSummaryMap(
+        workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary = Channel.value(paramsSummaryMultiqc(summary_params))
+    ch_multiqc_files = ch_multiqc_files.mix(
+        ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
+        file(params.multiqc_methods_description, checkIfExists: true) :
+        file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    ch_methods_description                = Channel.value(
+        methodsDescriptionText(ch_multiqc_custom_methods_description))
+
+    ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
+    ch_multiqc_files = ch_multiqc_files.mix(
+        ch_methods_description.collectFile(
+            name: 'methods_description_mqc.yaml',
+            sort: true
+        )
+    )
+
+    MULTIQC (
+        ch_multiqc_files.collect(),
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList(),
+        [],
+        []
+    )
+
+    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    THE END
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+/*
 ========================================================================================
     VALIDATE INPUTS
 ========================================================================================
@@ -27,15 +124,15 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 sra_list = []
 sra_ids = [:]
 ch_input = null;
-if (params.input) 
-{ 
-    ch_input = file(params.input) 
+if (params.input)
+{
+    ch_input = file(params.input)
 }
 if(params.add_sra_file)
 {
     sra_file = file(params.add_sra_file, checkIfExists: true)
     allLines  = sra_file.readLines()
-    for( line : allLines ) 
+    for( line : allLines )
     {
         row = line.split(',')
         if(row.size() > 1)
@@ -61,7 +158,7 @@ if(params.add_vcf_file)
 {
     vcf_file = file(params.add_vcf_file, checkIfExists: true)
     allLines  = vcf_file.readLines()
-    for( line : allLines ) 
+    for( line : allLines )
     {
         if(line != "")
         {
@@ -144,13 +241,13 @@ workflow MYCOSNP {
     ch_sra_reads = Channel.empty()
     ch_sra_list  = Channel.empty()
     if(params.add_sra_file)
-    {   
+    {
         ch_sra_list = Channel.fromList(sra_list)
                              .map{valid -> [ ['id':sra_ids[valid],single_end:false], valid ]}
         SRA_FASTQ_SRATOOLS(ch_sra_list)
         ch_all_reads = ch_all_reads.mix(SRA_FASTQ_SRATOOLS.out.reads)
     }
-    
+
     if(params.input)
     {
         INPUT_CHECK (
@@ -196,8 +293,8 @@ workflow MYCOSNP {
         bai_file  = Channel.fromPath(params.ref_dir + "/bwa/bwa", checkIfExists:true, type: 'dir').first()
         dict_file = Channel.fromPath(params.ref_dir + "/dict/*.dict", checkIfExists:true).first()
         // meta_val // Not used
-         
-    } else if (params.ref_masked_fasta && params.ref_fai && params.ref_bwa && params.ref_dict ) 
+
+    } else if (params.ref_masked_fasta && params.ref_fai && params.ref_bwa && params.ref_dict )
     {
 
         if(params.ref_masked_fasta != null)
@@ -217,18 +314,18 @@ workflow MYCOSNP {
             dict_file = Channel.fromPath(params.ref_dict, checkIfExists:true).first()
         }
     }
-    else if (params.fasta) 
+    else if (params.fasta)
     {
-        ch_fasta = file(params.fasta) 
+        ch_fasta = file(params.fasta)
         BWA_REFERENCE(ch_fasta)
-    
+
         ch_versions = ch_versions.mix(BWA_REFERENCE.out.versions)
         fas_file = BWA_REFERENCE.out.reference_combined.map{meta1, fa1, fai, bai, dict -> [ fa1 ]}.first()
         fai_file = BWA_REFERENCE.out.reference_combined.map{meta1, fa1, fai, bai, dict -> [ fai ]}.first()
         bai_file = BWA_REFERENCE.out.reference_combined.map{meta1, fa1, fai, bai, dict -> [ bai ]}.first()
         dict_file = BWA_REFERENCE.out.reference_combined.map{meta1, fa1, fai, bai, dict -> [ dict ]}.first()
         meta_val = BWA_REFERENCE.out.reference_combined.map{meta1, fa1, fai, bai, dict -> [ meta1 ]}.first()
-    } else 
+    } else
     {
         exit 1, 'Input reference fasta or index files not specified!'
     }
@@ -248,7 +345,7 @@ workflow MYCOSNP {
         stats               channel: [ val(meta), stats ]
         flagstat            channel: [ val(meta), flagstat ]
         idxstats            channel: [ val(meta), idxstats ]
-        versions            channel: [ ch_versions ]    
+        versions            channel: [ ch_versions ]
 ========================================================================================
 */
 
@@ -299,36 +396,36 @@ workflow MYCOSNP {
         ch_vcf = ch_vcf.mix(ch_vcf_files)
         ch_vcf_idx = GATK4_HAPLOTYPECALLER.out.tbi.map{meta, idx ->[ idx ]  }.collect()
         ch_vcf_idx = ch_vcf_idx.mix(ch_vcfidx_files)
-        
+
         ch_vcfs = ch_vcf.mix(ch_vcf_idx).collect()
 
         GATK4_LOCALCOMBINEGVCFS(
                                     [id:'combined', single_end:false],
                                     ch_vcfs,
-                                    fas_file, 
-                                    fai_file, 
+                                    fas_file,
+                                    fai_file,
                                     dict_file)
 
-        GATK_VARIANTS( 
-                        fas_file, 
-                        fai_file, 
-                        bai_file, 
+        GATK_VARIANTS(
+                        fas_file,
+                        fai_file,
+                        bai_file,
                         dict_file,
-                        GATK4_LOCALCOMBINEGVCFS.out.combined_gvcf.map{meta, vcf, tbi->[ meta ]}, 
-                        GATK4_LOCALCOMBINEGVCFS.out.gvcf, 
-                        GATK4_LOCALCOMBINEGVCFS.out.tbi 
+                        GATK4_LOCALCOMBINEGVCFS.out.combined_gvcf.map{meta, vcf, tbi->[ meta ]},
+                        GATK4_LOCALCOMBINEGVCFS.out.gvcf,
+                        GATK4_LOCALCOMBINEGVCFS.out.tbi
                     )
-        
+
 
         ch_versions = ch_versions.mix(GATK_VARIANTS.out.versions)
-        
+
         if(params.snpeff != false){
             SNPEFF(GATK_VARIANTS.out.filtered_vcf, params.species)
         }
 
 /*
 ========================================================================================
-                          SUBWORKFLOW: Create Phylogeny 
+                          SUBWORKFLOW: Create Phylogeny
     take:
         fasta                     file
         constant_sites_string     val: string of constant sites A,C,G,T
@@ -337,7 +434,7 @@ workflow MYCOSNP {
         fasttree_tree     = fasttree_tree    // channel: [ phylogeny ]
         iqtree_tree       = iqtree_tree      // channel: [ phylogeny ]
         raxmlng_tree      = raxmlng_tree     // channel: [ phylogeny ]
-        versions          = ch_versions 
+        versions          = ch_versions
 ========================================================================================
 */
 
@@ -346,7 +443,7 @@ workflow MYCOSNP {
         if(! params.skip_phylogeny) {
             CREATE_PHYLOGENY(SEQKIT_REPLACE.out.fastx.map{meta, fas->[fas]}, '', SNPDISTS.out.tsv)
         }
-  
+
     }
 
      CUSTOM_DUMPSOFTWAREVERSIONS (
@@ -354,7 +451,7 @@ workflow MYCOSNP {
     )
 
     //
-    // MODULE: Run Pre-FastQC 
+    // MODULE: Run Pre-FastQC
     //
     FASTQC_RAW (
         ch_all_reads
@@ -378,7 +475,7 @@ workflow MYCOSNP {
     ch_multiqc_files = ch_multiqc_files.mix(BWA_PREPROCESS.out.flagstat.map{meta, stats -> [stats]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(BWA_PREPROCESS.out.idxstats.map{meta, stats -> [stats]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(BWA_PREPROCESS.out.qualimap.map{meta, stats -> [stats]}.ifEmpty([]))
-    
+
 
     MULTIQC (
         ch_multiqc_files.collect()
@@ -388,13 +485,13 @@ workflow MYCOSNP {
 
 /*
 ========================================================================================
-    //                       SUBWORKFLOW: Run SNPEFF_BUILD 
+    //                       SUBWORKFLOW: Run SNPEFF_BUILD
     // take:
     //     fasta
     //     gff
 
     // emit:
-    //     snpeffdb     
+    //     snpeffdb
     //     snpeffconfig
 ========================================================================================
 */
@@ -408,7 +505,7 @@ workflow MYCOSNP {
 
    /*
 ========================================================================================
-                          SUBWORKFLOW: Run SNPEFF 
+                          SUBWORKFLOW: Run SNPEFF
     // take:
     //     ch_snpeff_db
     //     ch_snpeff_config
@@ -416,7 +513,7 @@ workflow MYCOSNP {
     //     fasta (optional)
 
     // emit:
-    //     csv     
+    //     csv
     //     txt
     //     html
     //     tbi
